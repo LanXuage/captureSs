@@ -31,12 +31,18 @@ if __name__ == '__main__':
     for img_url in imgList:
         x = x + 1
         filename = 'ss' + str(x) + '.png'
-        with request.urlopen(img_url, context=context) as res, open(filename, 'wb') as fp:
-            fp.write(res.read())
-        image = Image.open(filename)
-        image = add_edge(image, 4)
-        image.save(filename)
-        code = code + "\n" + pytesseract.image_to_string(image)
-        image.close()
-        print(code)
+        if img_url != "":
+            try:
+                with request.urlopen(img_url, context=context) as res, open(filename, 'wb') as fp:
+                    fp.write(res.read())
+            except Exception as e:
+                print(e)
+            image = Image.open(filename)
+            image = add_edge(image, 4)
+            image.save(filename)
+            code = code + "\n" + pytesseract.image_to_string(image)
+            image.close()
+        else:
+            print("no picture be found")
+    print(code)
     print('end')
