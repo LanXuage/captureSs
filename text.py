@@ -40,9 +40,12 @@ if __name__ == '__main__':
             image = Image.open(filename)
             image = add_edge(image, 4)
             image.save(filename)
-            code = code + "\n" + pytesseract.image_to_string(image)
+            code = code + "\n" + pytesseract.image_to_string(image, 'my_tran')
             image.close()
         else:
             print("no picture be found")
+    code = code.replace(' ', '').replace('\n\n', '\n')
     print(code)
+    str_arr = code.splitlines(False)
+    print(str_arr)
     print('end')
