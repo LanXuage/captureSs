@@ -40,12 +40,32 @@ if __name__ == '__main__':
             image = Image.open(filename)
             image = add_edge(image, 4)
             image.save(filename)
-            code = code + "\n" + pytesseract.image_to_string(image, 'my_tran')
+            code = code + "\n" + pytesseract.image_to_string(image, 'my_tran+chi_sim')
             image.close()
         else:
             print("no picture be found")
-    code = code.replace(' ', '').replace('\n\n', '\n')
+    code = code.replace(' ', '').replace('\n\n', '\n').replace('。', '')
     print(code)
-    str_arr = code.splitlines(False)
-    print(str_arr)
+    servers = re.compile(r'服务器\d?[:：](\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})').findall(code)
+    methods = re.compile(r'加密方式[:：](\w{3}-\w{3}-\w{3})').findall(code)
+    ports = re.compile(r'端口[:：](\d+)\n').findall(code)
+    passwords = re.compile(r'密码[:：](.+)\n').findall(code)
+    print(servers)
+    print(methods)
+    print(ports)
+    print(passwords)
+    if len(servers) == len(methods) == len(ports) == len(passwords):
+        for i in range(len(servers)):
+            with open('config' + str(i) + '.json', 'w') as fp:
+                fp.write('{\n"server":"' + servers[i] + '",\n'
+                         '"server_port":"' + ports[i] + '",\n'
+                         '"local_address":"127.0.0.1",\n'
+                         '"local_port":1080,\n'
+                         '"password":"' + passwords[i] + '",\n'
+                         '"timeout":300,\n'
+                         '"method":"' + methods[i] + '",\n'
+                         '"fast_open":false,\n'
+                         '"workers":1\n}')
+    else:
+        print("Incomplete data")
     print('end')
